@@ -62,16 +62,26 @@ func parseRequestLine(requestStr string) (*RequestLine, error) {
 		return nil, fmt.Errorf("invalid request line: %s", requestLine)
 	}
 
-	httpVersion := strings.Split(requestLineParts[2], forwardSlash)[1]
+	httpVersionParts := strings.Split(requestLineParts[2], forwardSlash)
+
+	if len(httpVersionParts) != 2 {
+		return nil, fmt.Errorf("invalid http version: %s", requestLineParts[2])
+	}
+
+	if httpVersionParts[0] != "HTTP" {
+		return nil, fmt.Errorf("invalid http version: %s", requestLineParts[2])
+	}
+
+	if httpVersionParts[1] != "1.1" {
+		return nil, fmt.Errorf("unsupported http version: %s", httpVersionParts[1])
+	}
+
+	httpVersion := httpVersionParts[1]
 
 	parsedRequestLine := &RequestLine{
 		Method:        requestLineParts[0],
 		RequestTarget: requestLineParts[1],
 		HttpVersion:   httpVersion,
-	}
-
-	if parsedRequestLine.HttpVersion != "1.1" {
-		return nil, fmt.Errorf("unsupported http version: %s", parsedRequestLine.HttpVersion)
 	}
 
 	for _, letter := range parsedRequestLine.Method {

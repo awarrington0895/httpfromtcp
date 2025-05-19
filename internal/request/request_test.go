@@ -51,6 +51,11 @@ func TestUnsupportedHttpVersion(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestUnsupportedHttpVersionDesignation(t *testing.T) {
+	_, err := FromReader(strings.NewReader("GET /coffee TCP/1.1\r\nHost: localhost:42069\r\nUser-Agent: curl/7.81.0\r\nAccept: */*\r\n\r\n"))
+	require.Error(t, err)
+}
+
 type chunkReader struct {
 	data            string
 	numBytesPerRead int
