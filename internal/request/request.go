@@ -4,6 +4,14 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode"
+)
+
+type parserStatus int
+
+const (
+	initialized parserStatus = iota
+	done
 )
 
 type Request struct {
@@ -60,6 +68,16 @@ func parseRequestLine(requestStr string) (*RequestLine, error) {
 		Method:        requestLineParts[0],
 		RequestTarget: requestLineParts[1],
 		HttpVersion:   httpVersion,
+	}
+
+	if parsedRequestLine.HttpVersion != "1.1" {
+		return nil, fmt.Errorf("unsupported http version: %s", parsedRequestLine.HttpVersion)
+	}
+
+	for _, letter := range parsedRequestLine.Method {
+		if !unicode.IsUpper(letter) {
+			return nil, fmt.Errorf("method must contain only uppercase alphabetic characters: %s", parsedRequestLine.Method)
+		}
 	}
 
 	return parsedRequestLine, nil
