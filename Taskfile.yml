@@ -1,0 +1,28 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+
+  test:
+    cmds:
+      - go test ./...
+
+  tcp:build:
+    cmds:
+      - go build cmd/tcplistener/main.go
+
+  tcp:run:
+    cmds:
+      - go run cmd/tcplistener/main.go
+  
+  udp:build:
+    cmds:
+      - go build cmd/udpsender/main.go
+
+  udp:run:
+    cmds:
+      - go run cmd/udpsender/main.go
