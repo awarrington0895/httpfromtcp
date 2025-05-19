@@ -30,6 +30,22 @@ func FromReader(reader io.Reader) (*Request, error) {
 	requestStr := string(rawRequest)
 
 	// Discarding the rest of the request for now
+	parsedRequestLine, err := parseRequestLine(requestStr)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse request line: %w", err)
+	}
+
+	fmt.Println(parsedRequestLine)
+
+	request := &Request{
+		RequestLine: *parsedRequestLine,
+	}
+
+	return request, nil
+}
+
+func parseRequestLine(requestStr string) (*RequestLine, error) {
 	requestLine := strings.Split(requestStr, carriageReturn)[0]
 
 	requestLineParts := strings.Split(requestLine, space)
@@ -40,21 +56,11 @@ func FromReader(reader io.Reader) (*Request, error) {
 
 	httpVersion := strings.Split(requestLineParts[2], forwardSlash)[1]
 
-	parsedRequestLine := RequestLine{
+	parsedRequestLine := &RequestLine{
 		Method:        requestLineParts[0],
 		RequestTarget: requestLineParts[1],
 		HttpVersion:   httpVersion,
 	}
 
-	fmt.Println(parsedRequestLine)
-
-	request := &Request{
-		RequestLine: parsedRequestLine,
-	}
-
-	return request, nil
-}
-
-func parseRequestLine(requestLine string) {
-
+	return parsedRequestLine, nil
 }
